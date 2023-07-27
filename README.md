@@ -32,7 +32,7 @@ Prior to changing and installing the interface card, it is crucial to ensure tha
 
 > You can find the official documentation for this [here](https://network.nvidia.com/support/firmware/nic/).
 
-In you host do:
+In your host do:
 
 1. Get the NVIDIA Firmware Tools (MFT) from here: https://network.nvidia.com/products/adapter-software/firmware-tools/
 
@@ -102,194 +102,87 @@ Upon comparing the cards, it becomes evident that they share identical size and 
 ![equ3](https://github.com/camilo-nunez/r86s-25g/blob/4ba1ae08f3bc913693351f933520ca9f847c0fd6/imgs/440071a96d495743/440071a96d495743-4.png)
 
 
-## Phase I
+## Display the new card
+
+Let confirm whether or not we can view the card, and provide the slot ID where the device is located.
+> Here the slot device have the form `bus:device.function`. More info about the `lspci` command in the [man page](https://man7.org/linux/man-pages/man8/lspci.8.html).
+
 ```
-root@r86s-01:~# lspci
-00:00.0 Host bridge: Intel Corporation Device 4e24
-00:02.0 VGA compatible controller: Intel Corporation JasperLake [UHD Graphics] (rev 01)
-00:14.0 USB controller: Intel Corporation Device 4ded (rev 01)
-00:14.2 RAM memory: Intel Corporation Device 4def (rev 01)
-00:16.0 Communication controller: Intel Corporation Management Engine Interface (rev 01)
-00:1a.0 SD Host controller: Intel Corporation Device 4dc4 (rev 01)
-00:1c.0 PCI bridge: Intel Corporation Device 4db8 (rev 01)
-00:1c.1 PCI bridge: Intel Corporation Device 4db9 (rev 01)
-00:1c.2 PCI bridge: Intel Corporation Device 4dba (rev 01)
-00:1c.4 PCI bridge: Intel Corporation Device 4dbc (rev 01)
-00:1f.0 ISA bridge: Intel Corporation Device 4d87 (rev 01)
-00:1f.3 Audio device: Intel Corporation Jasper Lake HD Audio (rev 01)
-00:1f.4 SMBus: Intel Corporation Jasper Lake SMBus (rev 01)
-00:1f.5 Serial bus controller: Intel Corporation Jasper Lake SPI Controller (rev 01)
-01:00.0 Ethernet controller: Intel Corporation Ethernet Controller I226-V (rev 04)
-02:00.0 Ethernet controller: Intel Corporation Ethernet Controller I226-V (rev 04)
-03:00.0 Ethernet controller: Intel Corporation Ethernet Controller I226-V (rev 04)
+root@r86s-01:~# lspci | grep -e 'Mellanox*'
 04:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
 04:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
 ```
 
+The card is located in the bus ID `04`, with the device number `00`. Additionally, the two functions of the two interfaces have IDs `0` and `1`, respectively.
+
+## About the PCIe lanes usage
+
+It is important to note that the [Intel Celeron N5105](https://www.intel.com/content/www/us/en/products/sku/212328/intel-celeron-processor-n5105-4m-cache-up-to-2-90-ghz/specifications.html) processor is equipped with a maximum of 8 PCIe lanes. Let's investigate the distribution of the lanes around the devices. To do this, we will examine the system's topology using the `lstopo` command:
+
 ```
-root@r86s-01:~# lspci -s 04:00.0 -vv
-04:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
-    Subsystem: Mellanox Technologies MCX4421A-ACQN ConnectX-4 Lx EN OCP,2x25G
-    Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
-    Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-    Latency: 0, Cache Line Size: 64 bytes
-    Interrupt: pin A routed to IRQ 29
-    IOMMU group: 13
-    Region 0: Memory at 4010000000 (64-bit, prefetchable) [size=32M]
-    Expansion ROM at 7fd00000 [disabled] [size=1M]
-    Capabilities: [60] Express (v2) Endpoint, MSI 00
-        DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s unlimited, L1 unlimited
-            ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 25W
-        DevCtl: CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
-            RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset-
-            MaxPayload 256 bytes, MaxReadReq 512 bytes
-        DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr- TransPend-
+root@r86s-01:~# lstopo
+Machine (7721MB total)
+  Package L#0
+    NUMANode L#0 (P#0 7721MB)
+    L3 L#0 (4096KB) + L2 L#0 (1536KB)
+      L1d L#0 (32KB) + L1i L#0 (32KB) + Core L#0 + PU L#0 (P#0)
+      L1d L#1 (32KB) + L1i L#1 (32KB) + Core L#1 + PU L#1 (P#1)
+      L1d L#2 (32KB) + L1i L#2 (32KB) + Core L#2 + PU L#2 (P#2)
+      L1d L#3 (32KB) + L1i L#3 (32KB) + Core L#3 + PU L#3 (P#3)
+  HostBridge
+    PCI 00:02.0 (VGA)
+    PCIBridge
+      PCI 01:00.0 (Ethernet)
+        Net "enp1s0"
+    PCIBridge
+      PCI 02:00.0 (Ethernet)
+        Net "enp2s0"
+    PCIBridge
+      PCI 03:00.0 (Ethernet)
+        Net "enp3s0"
+    PCIBridge
+      PCI 04:00.0 (Ethernet)
+        Net "enp4s0f0np0"
+        OpenFabrics "mlx5_0"
+      PCI 04:00.1 (Ethernet)
+        Net "enp4s0f1np1"
+        OpenFabrics "mlx5_1"
+    Block "mmcblk0"
+    Block "mmcblk0boot0"
+    Block "mmcblk0boot1"
+  Misc(MemoryModule)
+  Misc(MemoryModule)
+
+```
+
+Here, we can confirm that the distribution of the PCIe lanes is concentrated around buses `00`, `01`, `02`, `03`, and `04`. Among these lanes, the most crucial one is bus 04 as it houses our MCX4421A card. However, it's essential to consider the other lanes as well. Let's take a closer look at the PCIe configuration:
+
+```
+root@r86s-01:~# lspci -s 01:00.0 -vvv | grep Width
+        LnkCap: Port #0, Speed 5GT/s, Width x1, ASPM L1, Exit Latency L1 <4us
+        LnkSta: Speed 5GT/s, Width x1
+root@r86s-01:~# lspci -s 02:00.0 -vvv | grep Width
+        LnkCap: Port #0, Speed 5GT/s, Width x1, ASPM L1, Exit Latency L1 <4us
+        LnkSta: Speed 5GT/s, Width x1
+root@r86s-01:~# lspci -s 03:00.0 -vvv | grep Width
+        LnkCap: Port #0, Speed 5GT/s, Width x1, ASPM L1, Exit Latency L1 <4us
+        LnkSta: Speed 5GT/s, Width x1
+```
+
+Upon further investigation, we have confirmed that our [Intel Ethernet Controller I226-V](https://www.intel.com/content/www/us/en/products/sku/210599/intel-ethernet-controller-i226v/specifications.html) card operates using x1 lanes for each interface. This information aligns perfectly with the details provided in the Intel datasheet. Specifically, for each individual port, the Speed & Slot Width is specified as 5G, x1.
+
+Now, let see what happen with the MCX4421A card:
+```
+root@r86s-01:~# lspci -s 04:00.0 -vvv | grep Width
         LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L1, Exit Latency L1 <4us
-            ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
-        LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
-            ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
         LnkSta: Speed 8GT/s, Width x4 (downgraded)
-            TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
-        DevCap2: Completion Timeout: Range ABC, TimeoutDis+ NROPrPrP- LTR-
-             10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
-             EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
-             FRS- TPHComp- ExtTPHComp-
-             AtomicOpsCap: 32bit- 64bit- 128bitCAS-
-        DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- 10BitTagReq- OBFF Disabled,
-             AtomicOpsCtl: ReqEn-
-        LnkCap2: Supported Link Speeds: 2.5-8GT/s, Crosslink- Retimer- 2Retimers- DRS-
-        LnkCtl2: Target Link Speed: 8GT/s, EnterCompliance- SpeedDis-
-             Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
-             Compliance Preset/De-emphasis: -6dB de-emphasis, 0dB preshoot
-        LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete+ EqualizationPhase1+
-             EqualizationPhase2+ EqualizationPhase3+ LinkEqualizationRequest-
-             Retimer- 2Retimers- CrosslinkRes: unsupported
-    Capabilities: [48] Vital Product Data
-        Product Name: CX4421A- ConnectX-4 LX SFP28
-        Read-only fields:
-            [PN] Part number: MCX4421A-ACQN        
-            [EC] Engineering changes: AC
-            [SN] Serial number: MT2025K30970            
-            [V0] Vendor specific: PCIeGen3 x8     
-            [RV] Reserved: checksum good, 0 byte(s) reserved
-        End
-    Capabilities: [9c] MSI-X: Enable+ Count=64 Masked-
-        Vector table: BAR=0 offset=00002000
-        PBA: BAR=0 offset=00003000
-    Capabilities: [c0] Vendor Specific Information: Len=18 <?>
-    Capabilities: [40] Power Management version 3
-        Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA PME(D0-,D1-,D2-,D3hot-,D3cold+)
-        Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
-    Capabilities: [100 v1] Advanced Error Reporting
-        UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-        UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-        UESvrt: DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
-        CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
-        CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-        AERCap: First Error Pointer: 04, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
-            MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
-        HeaderLog: 00000000 00000000 00000000 00000000
-    Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
-        ARICap: MFVC- ACS-, Next Function: 1
-        ARICtl: MFVC- ACS-, Function Group: 0
-    Capabilities: [180 v1] Single Root I/O Virtualization (SR-IOV)
-        IOVCap: Migration- 10BitTagReq- Interrupt Message Number: 000
-        IOVCtl: Enable- Migration- Interrupt- MSE- ARIHierarchy+ 10BitTagReq-
-        IOVSta: Migration-
-        Initial VFs: 8, Total VFs: 8, Number of VFs: 0, Function Dependency Link: 00
-        VF offset: 2, stride: 1, Device ID: 1016
-        Supported Page Size: 000007ff, System Page Size: 00000001
-        Region 0: Memory at 0000004014000000 (64-bit, prefetchable)
-        VF Migration: offset: 00000000, BIR: 0
-    Capabilities: [1c0 v1] Secondary PCI Express
-        LnkCtl3: LnkEquIntrruptEn- PerformEqu-
-        LaneErrStat: 0
-    Capabilities: [230 v1] Access Control Services
-        ACSCap: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-        ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-    Kernel driver in use: mlx5_core
-    Kernel modules: mlx5_core
-```
-
-
-```
-root@r86s-01:~# lspci -s 04:00.1 -vv
-04:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
-    Subsystem: Mellanox Technologies MCX4421A-ACQN ConnectX-4 Lx EN OCP,2x25G
-    Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
-    Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-    Latency: 0, Cache Line Size: 64 bytes
-    Interrupt: pin B routed to IRQ 19
-    IOMMU group: 14
-    Region 0: Memory at 4012000000 (64-bit, prefetchable) [size=32M]
-    Expansion ROM at 7fc00000 [disabled] [size=1M]
-    Capabilities: [60] Express (v2) Endpoint, MSI 00
-        DevCap: MaxPayload 512 bytes, PhantFunc 0, Latency L0s unlimited, L1 unlimited
-            ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 25W
-        DevCtl: CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
-            RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLReset-
-            MaxPayload 256 bytes, MaxReadReq 512 bytes
-        DevSta: CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr- TransPend-
+root@r86s-01:~# lspci -s 04:00.1 -vvv | grep Width
         LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L1, Exit Latency L1 <4us
-            ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
-        LnkCtl: ASPM L1 Enabled; RCB 64 bytes, Disabled- CommClk+
-            ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
         LnkSta: Speed 8GT/s, Width x4 (downgraded)
-            TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
-        DevCap2: Completion Timeout: Range ABC, TimeoutDis+ NROPrPrP- LTR-
-             10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
-             EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
-             FRS- TPHComp- ExtTPHComp-
-             AtomicOpsCap: 32bit- 64bit- 128bitCAS-
-        DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- 10BitTagReq- OBFF Disabled,
-             AtomicOpsCtl: ReqEn-
-        LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete- EqualizationPhase1-
-             EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
-             Retimer- 2Retimers- CrosslinkRes: unsupported
-    Capabilities: [48] Vital Product Data
-        Product Name: CX4421A- ConnectX-4 LX SFP28
-        Read-only fields:
-            [PN] Part number: MCX4421A-ACQN        
-            [EC] Engineering changes: AC
-            [SN] Serial number: MT2025K30970            
-            [V0] Vendor specific: PCIeGen3 x8     
-            [RV] Reserved: checksum good, 0 byte(s) reserved
-        End
-    Capabilities: [9c] MSI-X: Enable+ Count=64 Masked-
-        Vector table: BAR=0 offset=00002000
-        PBA: BAR=0 offset=00003000
-    Capabilities: [c0] Vendor Specific Information: Len=18 <?>
-    Capabilities: [40] Power Management version 3
-        Flags: PMEClk- DSI- D1- D2- AuxCurrent=375mA PME(D0-,D1-,D2-,D3hot-,D3cold+)
-        Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=0 PME-
-    Capabilities: [100 v1] Advanced Error Reporting
-        UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-        UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-        UESvrt: DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
-        CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
-        CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-        AERCap: First Error Pointer: 04, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
-            MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
-        HeaderLog: 00000000 00000000 00000000 00000000
-    Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
-        ARICap: MFVC- ACS-, Next Function: 0
-        ARICtl: MFVC- ACS-, Function Group: 0
-    Capabilities: [180 v1] Single Root I/O Virtualization (SR-IOV)
-        IOVCap: Migration- 10BitTagReq- Interrupt Message Number: 000
-        IOVCtl: Enable- Migration- Interrupt- MSE- ARIHierarchy- 10BitTagReq-
-        IOVSta: Migration-
-        Initial VFs: 8, Total VFs: 8, Number of VFs: 0, Function Dependency Link: 01
-        VF offset: 9, stride: 1, Device ID: 1016
-        Supported Page Size: 000007ff, System Page Size: 00000001
-        Region 0: Memory at 0000004014800000 (64-bit, prefetchable)
-        VF Migration: offset: 00000000, BIR: 0
-    Capabilities: [230 v1] Access Control Services
-        ACSCap: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-        ACSCtl: SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-    Kernel driver in use: mlx5_core
-    Kernel modules: mlx5_core
-
 ```
+The key and critical confirmation here is that the **MCX4421A is currently utilizing a width of x4 lanes**. This translates to a significant throughput of 3.938 GB/s, which is equivalent to 31.504 Gbps at the physical layer. This high data transfer rate is undoubtedly beneficial for the card's performance and capabilities.
+
+> If you want to know more about the performance of the PCIe lanes and the NICs, I highly recommend you the paper [Understanding PCIe performance for end host networking](https://doi.org/10.1145/3230543.3230560).
 
 ## Phase II
 
