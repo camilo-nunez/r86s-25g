@@ -180,7 +180,7 @@ root@r86s-01:~# lspci -s 04:00.1 -vvv | grep Width
         LnkCap: Port #0, Speed 8GT/s, Width x8, ASPM L1, Exit Latency L1 <4us
         LnkSta: Speed 8GT/s, Width x4 (downgraded)
 ```
-The key and critical confirmation here is that the **MCX4421A is currently utilizing a width of x4 lanes**. This translates to a significant throughput of 3.938 GB/s, which is equivalent to 31.504 Gbps at the physical layer. This high data transfer rate is undoubtedly beneficial for the card's performance and capabilities.
+The key and critical confirmation here is that the **MCX4421A is currently utilizing a width of x4 lanes**. This translates to a significant throughput of 3.938 GB/s, which is equivalent to 31.504 Gbps at the physical layer. However, it is crucial to note that we cannot fully utilize the complete data transfer rate offered by the 8x lanes default configuration of the card.
 
 > If you want to know more about the performance of the PCIe lanes and the NICs, I highly recommend you the paper [Understanding PCIe performance for end host networking](https://doi.org/10.1145/3230543.3230560).
 
