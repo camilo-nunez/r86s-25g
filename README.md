@@ -26,13 +26,27 @@ I purchased the MCX4421A-ACQN card from eBay at approximately ~$90 USD.
 
 Prior to changing and installing the interface card, it is crucial to ensure that the card's firmware is up to date. Therefore, let's proceed with the firmware upgrade!
 
+![MCX4421A-ACQN card.](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/7f4baf08b8713a04.gif)
+
 ### Upgrade firmware
 
 > You can find the official documentation for this [here](https://network.nvidia.com/support/firmware/nic/).
 
 1. Get the NVIDIA Firmware Tools (MFT) from here: https://network.nvidia.com/products/adapter-software/firmware-tools/
+
 2. As root, start the mst tools with: `sudo mst start`
+
+![cmd1](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-1.png)
+
 3. To verify the Part Number (OPN), the PSID, and the PCI device name, execute the command: `sudo mlxfwmanager`.
+
+![cmd2](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-2.png)
+
 4. Once you have obtained the OPN and PSID, proceed to download the official firmware for your device from the following link: https://network.nvidia.com/support/firmware/connectx4lxen/.
+
+![cmd3](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-3.png)
+
 5. After obtaining the PCI device name, proceed to burn the downloaded binary firmware using the following command: `sudo mlxburn –i <fw-ConnectX-4-downloaded>.bin –d /dev/mst/<PCI-device-name>`
+
+![cmd4](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-4.png)
 > More info about the `mlxburn` command [here](https://docs.nvidia.com/networking/pages/viewpage.action?pageId=12013137).
