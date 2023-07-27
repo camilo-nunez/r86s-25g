@@ -55,8 +55,30 @@ Prior to changing and installing the interface card, it is crucial to ensure tha
 
 1. Remove the four lateral screws.
 
+![rem1](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-1.png)
+
+![rem2](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-2.png)
+
 2. Take your time, there's no need to hurry. Start by slowly opening the case. With a [Opening Tool](https://www.ifixit.com/products/ifixit-opening-tool) remove the PCI flex. And the power cable. DO NOT disconnect the battery cable.
+
+![rem3](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-3.png)
 
 3. Unscrew the four screws securing the card in place. Carefully take out the card from its slot after removing the screws.
 
+![rem4](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-4.png)
+
 4. Finally you will get this:
+
+![rem5](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-5.png)
+
+Upon comparing the cards, it becomes evident that they share identical size and form.
+
+![rem6](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-6.png)
+
+![rem7](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-7.png)
+
+5. Lastly, add a thermal pad or thermal paste, then proceed to mount the card securely by fastening the four screws. Once the card is securely in place, carefully reconnect both the PCIe flex and the power cable.
+
+![rem8](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-8.png)
+
+![rem9](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-9.png)
