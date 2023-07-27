@@ -184,6 +184,105 @@ The key and critical confirmation here is that the **MCX4421A is currently utili
 
 > If you want to know more about the performance of the PCIe lanes and the NICs, I highly recommend you the paper [Understanding PCIe performance for end host networking](https://doi.org/10.1145/3230543.3230560).
 
-## Phase II
+## Experiments
 
+* I installed Debian 12 in the nodes (my workstation and in the R86S device).
+* I didn't install the `NVIDIA MLNX_OFED` driver in either of the nodes.
+* I set the MTU in 9000 in both interface nodes (workstation and R86S)
+
+### Test 1: `iperf`
+
+> I used `iperf version 2.0.14a`, and not `iperf3`, according to the official documentation of [performance measure from Nvidia](https://enterprise-support.nvidia.com/s/article/iperf--iperf2--iperf3).
+
+In my workstation I run:
+```
+iperf -s -P8
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size:  128 KByte (default)
+------------------------------------------------------------
+[  4] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33252
+[  5] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33236
+[  6] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33254
+[  7] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33214
+[  8] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33220
+[  9] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33266
+[ 10] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33274
+[ 11] local 10.10.0.1 port 5001 connected with 10.10.0.2 port 33290
+[ ID] Interval       Transfer     Bandwidth
+[ 11] 0.0000-9.9992 sec  9.60 GBytes  8.24 Gbits/sec
+[  5] 0.0000-10.0065 sec  2.37 GBytes  2.03 Gbits/sec
+[  7] 0.0000-10.0062 sec  2.39 GBytes  2.05 Gbits/sec
+[  9] 0.0000-10.0034 sec  3.15 GBytes  2.71 Gbits/sec
+[  4] 0.0000-10.0103 sec  3.25 GBytes  2.79 Gbits/sec
+[  6] 0.0000-10.0065 sec  2.43 GBytes  2.09 Gbits/sec
+[ 10] 0.0000-10.0045 sec  2.43 GBytes  2.09 Gbits/sec
+[  8] 0.0000-10.0036 sec  3.21 GBytes  2.76 Gbits/sec
+[SUM] 0.0000-10.0091 sec  28.8 GBytes  24.7 Gbits/sec
+```
+
+In the R86S I run:
+```
+root@r86s-01:~# iperf -c 10.10.0.1 -P8
+------------------------------------------------------------
+Client connecting to 10.10.0.1, TCP port 5001
+TCP window size: 16.0 KByte (default)
+------------------------------------------------------------
+[  7] local 10.10.0.2 port 33254 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/32)
+[  8] local 10.10.0.2 port 33266 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/60)
+[  2] local 10.10.0.2 port 33214 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/337)
+[  1] local 10.10.0.2 port 33220 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/335)
+[  3] local 10.10.0.2 port 33252 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/70)
+[  4] local 10.10.0.2 port 33236 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/86)
+[  5] local 10.10.0.2 port 33274 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/58)
+[  6] local 10.10.0.2 port 33290 connected with 10.10.0.1 port 5001 (icwnd/mss/irtt=87/8948/66)
+[ ID] Interval       Transfer     Bandwidth
+[  1] 0.0000-10.0184 sec  3.21 GBytes  2.75 Gbits/sec
+[  8] 0.0000-10.0179 sec  3.15 GBytes  2.70 Gbits/sec
+[  2] 0.0000-10.0171 sec  2.39 GBytes  2.05 Gbits/sec
+[  4] 0.0000-10.0165 sec  2.37 GBytes  2.03 Gbits/sec
+[  6] 0.0000-10.0183 sec  9.60 GBytes  8.23 Gbits/sec
+[  5] 0.0000-10.0173 sec  2.43 GBytes  2.08 Gbits/sec
+[  3] 0.0000-10.0161 sec  3.25 GBytes  2.79 Gbits/sec
+[  7] 0.0000-10.0172 sec  2.43 GBytes  2.08 Gbits/sec
+[SUM] 0.0000-10.0049 sec  28.8 GBytes  24.8 Gbits/sec
+```
+
+### Test 2: `qperf`
+
+Run the qperf server (in my case, the workstation):
+```
+$ qperf
+```
+
+#### Bandwidth
+
+Run the `qperf` client in the R86S device and get the throughput result:
+```
+root@r86s-01:~# qperf -ip 19766 -t 60 --use_bits_per_sec  10.10.0.1 tcp_bw
+tcp_bw:
+
+    bw  =  13.8 Gb/sec
+```
+
+#### Latency
+
+Run the `qperf` client test in the R86S device and get the latency value:
+
+```
+root@r86s-01:~# qperf -vvs 10.10.0.1 tcp_lat
+tcp_lat:
+    latency         =      16 us
+    msg_rate        =    62.5 K/sec
+    loc_send_bytes  =    62.5 KB
+    loc_recv_bytes  =    62.5 KB
+    loc_send_msgs   =  62,478 
+    loc_recv_msgs   =  62,477 
+    rem_send_bytes  =    62.5 KB
+    rem_recv_bytes  =    62.5 KB
+    rem_send_msgs   =  62,478 
+    rem_recv_msgs   =  62,478 
+```
+
+## Fast tests
 https://github.com/camilo-nunez/r86s-25g/assets/5784228/54bea83f-fca4-41eb-a876-00cfc127fe37
