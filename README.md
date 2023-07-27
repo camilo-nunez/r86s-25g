@@ -50,3 +50,13 @@ Prior to changing and installing the interface card, it is crucial to ensure tha
 
 ![cmd4](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-4.png)
 > More info about the `mlxburn` command [here](https://docs.nvidia.com/networking/pages/viewpage.action?pageId=12013137).
+
+## Change the CX341A interface card
+
+1. Remove the four lateral screws.
+
+2. Take your time, there's no need to hurry. Start by slowly opening the case. With a [Opening Tool](https://www.ifixit.com/products/ifixit-opening-tool) remove the PCI flex. And the power cable. DO NOT disconnect the battery cable.
+
+3. Unscrew the four screws securing the card in place. Carefully take out the card from its slot after removing the screws.
+
+4. Finally you will get this:
