@@ -36,11 +36,11 @@ Prior to changing and installing the interface card, it is crucial to ensure tha
 
 2. As root, start the mst tools with: `sudo mst start`
 
-![cmd1](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-1.png)
+![cmd1](https://github.com/camilo-nunez/r86s-25g/blob/27848541d1a19d63c6cd65e9c8a103080711f426/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-1.png)
 
 3. To verify the Part Number (OPN), the PSID, and the PCI device name, execute the command: `sudo mlxfwmanager`.
 
-![cmd2](https://github.com/camilo-nunez/r86s-25g/blob/1b3a5a17c6c8ad0920ae7d28878fcb13baf4ef1a/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-2.png)
+![cmd2](https://github.com/camilo-nunez/r86s-25g/blob/27848541d1a19d63c6cd65e9c8a103080711f426/imgs/35a7c2ba0b40c5bb/35a7c2ba0b40c5bb-2.png)
 
 4. Once you have obtained the OPN and PSID, proceed to download the official firmware for your device from the following link: https://network.nvidia.com/support/firmware/connectx4lxen/.
 
