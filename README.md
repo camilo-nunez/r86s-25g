@@ -93,7 +93,7 @@ Upon comparing the cards, it becomes evident that they share identical size and 
 * 1x MCX455A-ECAT in my host
 * 1x [1.5m (5ft) LC UPC to LC UPC Duplex OM4 Multimode](https://www.fs.com/products/88534.html)
 * 1x [Mellanox MAM1Q00A-QSA28](https://www.fs.com/products/178073.html)
-* 2x [Generic Compatible 25GBASE-SR SFP28 850nm 100m DOM Duplex LC MMF](https://www.fs.com/products/75296.html)
+* 2x [Generic Compatible 10/25GBASE-SR SFP28 850nm 100m DOM Duplex LC MMF](https://www.fs.com/mx/products/111041.html)
 
 ![equ1](https://github.com/camilo-nunez/r86s-25g/blob/4ba1ae08f3bc913693351f933520ca9f847c0fd6/imgs/440071a96d495743/440071a96d495743-1.png)
 
