@@ -293,7 +293,4 @@ root@r86s-01:~# lspci -s 04:00.1 -vv
 
 ## Phase II
 
-## Results
-
-<video src="https://drive.google.com/file/d/1fSryO0m7-rJKG6DGXuVsYvaA1hdmxiCC/view?usp=drive_link" controls="controls" style="max-width: 730px;">
-</video>
+https://github.com/camilo-nunez/r86s-25g/assets/5784228/54bea83f-fca4-41eb-a876-00cfc127fe37
