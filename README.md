@@ -61,7 +61,7 @@ In your host do:
 
 ![rem2](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-2.png)
 
-2. Take your time, there's no need to hurry. Start by slowly opening the case. With a [Opening Tool](https://www.ifixit.com/products/ifixit-opening-tool) remove the PCI flex. And the power cable. DO NOT disconnect the battery cable.
+2. Take your time, there's no need to hurry. Start by slowly opening the case. With a [Opening Tool](https://www.ifixit.com/products/ifixit-opening-tool) remove the PCI flex and the power cable. DO NOT disconnect the battery cable.
 
 ![rem3](https://github.com/camilo-nunez/r86s-25g/blob/a66d5ce754d549cdc7b39aa216dc8aa76d94d59e/imgs/eff6bb60850e0922/eff6bb60850e0922-3.png)
 
